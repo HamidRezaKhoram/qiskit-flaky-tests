@@ -30,6 +30,14 @@ RUN if [ "$PYTHON_VERSION" = "3.13.1" ]; then \
         python -m pip install -c constraints.txt -e .; \
     fi
 # If using Python 3.10, install optional dependencies and run the extra report.
-
+RUN if [ "$PYTHON_VERSION" = "3.10.16" ]; then \
+        QISKIT_NO_CACHE_GATES=1 python -m pip install -U -r requirements.txt -c constraints.txt; \
+        QISKIT_NO_CACHE_GATES=1 python -m pip install -U -r requirements-dev.txt -c constraints.txt; \
+        QISKIT_NO_CACHE_GATES=1 python -m pip install -c constraints.txt -e .; \
+    fi
+RUN if [ "$PYTHON_VERSION" = "3.10.16" ]; then \
+      QISKIT_NO_CACHE_GATES=1 python -m pip install -r requirements-optional.txt -c constraints.txt && \
+      QISKIT_NO_CACHE_GATES=1 python tools/report_numpy_state.py; \
+    fi
 # The default command runs the tests.
 CMD ["stestr", "ru"]
